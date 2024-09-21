@@ -17,38 +17,66 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>
 
+
 journal=~/.journal/journal
+
+# Colour codes
+# text reset
+C0="\033[0m"
+# white bold
+C1="\033[37;1m"
+# red bold
+C2="\033[91;1m"
+# green bold
+C4="\033[92;1m"
+# cyan
+C5="\033[96;1m"
+# blue
+C6="\033[34;1m"
 
 if [ $# -eq 0 ] || [ "$1" = "-u" ]; then
 	clear
-	echo -e "You will now be taken into $JNEDITOR, where you may compose your journal entry.\n\n"
-	read -p "Press enter to continue..."
 	tmpfile=/tmp/$(date +%s)
 	touch $tmpfile
-	$JNEDITOR $tmpfile
+	printf "[$(date +%Y-%m-%d)] " >> $tmpfile
+	printf .$2 >> $tmpfile
+	printf "\n@$3 \n" >> $tmpfile 
+	$JNEDITOR +3 $tmpfile
 	touch ~/.journal/journal
-	echo -e "$(date +%A) $(date +%B) $(date +%d), $(date +%Y) at $(date +%r):\n" >> $journal
 	cat $tmpfile >> $journal
 	echo -e "\n~~~~~\n" >> $journal
 	rm $tmpfile
 	echo "thanks for the update!"
 
 elif [ "$1" = "-h" ]; then
-	echo "jn 0.3"
-	echo -e "by Ben Winston\n"
+	echo -e "\njn 0.3"
+	echo -e "by Ben Winston and hacked by gwyrdh\n"
 	echo -e "command: jn [options]\n"
-	echo "  -b => browse the journal"
+	echo "  -c => browse the journal in colour"
 	echo "  -h => brings you to this help screen"
-	echo "  -u => update journal (same as no arguments)"
+	echo "  -u => update journal S2 is title S3 is tag"
+	echo "  -t => find S2 tag"
+	echo "  -s => search for S2 string"
+	echo -e "  -g => go to S2 line number of search\n"
 
-elif [ "$1" = "-b" ]; then
-	if [ $# -ne 1 ]; then
-		echo "command: jn -b"
-	else
-		cat $journal | less
-	fi
+# print colour journal. thanks @coderofsalvation kanban.bash
+elif [ "$1" = "-c" ]; then
+		cat $journal | awk '{ 
+    a = gensub(/@([a-zA-Z0-9_\.-]+)/,"'$C5'&'$C0'","g")
+    a = gensub(/\.([a-zA-Z0-9_\.-]+)/,"'$C4'&'$C0'","g",a)
+    a = gensub(/\[([a-zA-Z0-9_\.-]+)\]/,"'$C6'&'$C0'","g",a)
+    print a
+  }'
+
+elif [ "$1" = "-t" ]; then
+	grep --color -n -A 1 -B 1 @$2 $journal
+	
+elif [ "$1" = "-s" ]; then
+	grep --color -n -A 2 -B 1 "$2" $journal
+	
+elif [ "$1" = "-g" ]; then
+	nano +$2 $journal
 
 else
-	echo "That's not (currently) and option!"
-	echo "Type jn -h for the help screen."
+	echo "That's not (currently) an option! Type jn -h for the help screen."
 fi
