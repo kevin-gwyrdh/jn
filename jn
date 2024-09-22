@@ -72,14 +72,19 @@ if [ $# -eq 0 ] || [ "$1" = "-u" ]; then
 	printf ."$2" >> "$tmpfile"
 # insert tag with @ to allow for colour substitution
 	printf "\n@"$3" \n" >> "$tmpfile" 
-# opens editor +3 puts cursor after date title and tag lines
+# opens editor +3 puts cursor on line 3 after date title and tag lines
+# this works for nano
 	"$JNEDITOR" +3 "$tmpfile"
 # touch journal file in case not yet created
 	touch "$journal"
+#	echo -e "\n" >> "$journal"
 	cat "$tmpfile" >> "$journal"
-	echo -e "\n~~~~~\n" >> "$journal"
+	echo -e "~~~~~~~~~~~~~\n" >> "$journal"
 # clean up
 	rm "$tmpfile"
+# sort - organises any entries put in out of sequence
+# perl script from here https://stackoverflow.com/questions/37669135/sort-paragraphs-in-text-file-from-bash
+	perl -n00 -e 'push @a, $_; END { print sort @a }' "$journal" > sorttemp && mv sorttemp "$journal"
 	echo "Thanks for the update!"
 
 # 'jn -h' -> help
