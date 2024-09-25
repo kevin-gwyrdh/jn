@@ -73,7 +73,7 @@ if [ $# -eq 0 ] || [ "$1" = "-u" ]; then
 # insert date in journal [ ] allows for colour substitution
 	printf "[$(date +%Y-%m-%d) $(date +%H:%M)] " >> "$tmpfile"
 # insert title with * allowing for colour substitution
-	printf *"$2" >> "$tmpfile"
+	printf *"$2"* >> "$tmpfile"
 # insert tag with @ to allow for colour substitution
 	printf "\n@"$3" \n" >> "$tmpfile" 
 # opens editor +3 puts cursor on line 3 after date title and tag lines
@@ -104,6 +104,7 @@ elif [ "$1" = "-c" ]; then
     a = gensub(/@([a-zA-Z0-9_\.-]+)/,"'$C5'&'$C0'","g")
     a = gensub(/\*([a-zA-Z0-9_\. -]+)\*/,"'$C4'&'$C0'","g",a)
     a = gensub(/\[([a-zA-Z0-9_: \.-]+)\]/,"'$C6'&'$C0'","g",a)
+    a = gensub(/(TODO)/,"'$C2'&'$C0'","g",a)
     print a
   }'
 
