@@ -61,6 +61,10 @@ C4="\033[92;1m"
 C5="\033[96;1m"
 # blue
 C6="\033[34;1m"
+# purple bold
+C7="\033[35;1m"
+# yellow bold
+C8="\033[33;1m"
 # for grep to show nicer colours to match add below line to bashrc and source
 # export GREP_COLORS='ms=01;96:ln=01;37'
 # note : ms = cyan for selected search word ln = strong white for line number
@@ -100,6 +104,7 @@ elif [ "$1" = "-c" ]; then
 # sort - organises any entries put in out of sequence
 # perl script from here https://stackoverflow.com/questions/37669135/sort-paragraphs-in-text-file-from-bash
 		perl -n00 -e 'push @a, $_; END { print sort @a }' "$journal" > sorttemp && mv sorttemp "$journal"
+# colours added here note: spaces included to allow for sentences to work and whole word TODO 
 		cat "$journal" | awk '{ 
     a = gensub(/@([a-zA-Z0-9_\.-]+)/,"'$C5'&'$C0'","g")
     a = gensub(/\*([a-zA-Z0-9_\. -]+)\*/,"'$C4'&'$C0'","g",a)
